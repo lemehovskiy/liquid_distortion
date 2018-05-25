@@ -1,7 +1,22 @@
 {
     "name": "liquid_distortion",
+    "version": "0.1.0",
     "description": "Liquid distortion plugin",
-    "main": "build\/liquid_distortion.js",
+    "main": "project_main_file",
+    "dependencies": {
+        "jquery": "^3.2.1",
+        "pixi.js": "^4.7.3"
+    },
+    "devDependencies": {
+        "babel-core": "^6.26.0",
+        "babel-loader": "^7.1.2",
+        "babel-preset-env": "^1.6.0",
+        "webpack": "^3.6.0"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "webpack"
+    },
     "keywords": [
         "canvas",
         "plugin",
@@ -11,6 +26,8 @@
         "pixijs"
     ],
     "repository": {
-        "url": "https:\/\/github.com\/lemehovskiy\/liquid_distortion"
-    }
+        "url": "https://github.com/lemehovskiy/liquid_distortion"
+    },
+    "author": "lemehovskiy",
+    "license": "ISC"
 }

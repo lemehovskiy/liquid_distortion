@@ -14,13 +14,9 @@
         constructor(element, options) {
 
             let self = this;
-            
+
             //extend by function call
-            self.settings = $.extend(true, {
-               
-                test_property: false
-                
-            }, options);
+            self.settings = $.extend(true, {}, options);
 
             self.$element = $(element);
 
@@ -29,102 +25,59 @@
             self.settings = $.extend(true, self.settings, self.data_options);
 
 
-            self.canvas = null;
-            self.context = null;
-            self.FPS = 30;
+            self.renderer = new PIXI.autoDetectRenderer(1000, 500, {transparent: true});
+            self.stage = new PIXI.Container();
+            self.displacement_sprite = new PIXI.Sprite.fromImage(self.settings.displacement_sprite);
+            self.displacement_filter = new PIXI.filters.DisplacementFilter(self.displacement_sprite);
 
             self.init();
+
         }
 
         init() {
 
             let self = this;
 
-            window.requestAnimFrame = (function () {
-                return window.requestAnimationFrame ||
-                    window.webkitRequestAnimationFrame ||
-                    window.mozRequestAnimationFrame ||
-                    window.oRequestAnimationFrame ||
-                    window.msRequestAnimationFrame ||
+            document.body.appendChild(self.renderer.view);
 
-                    function (callback) {
-                        window.setTimeout(callback, 1000 / FPS);
-                    };
-            })();
-
-            let body = document.querySelector('body');
-
-            self.canvas = document.createElement('canvas');
-
-            self.$element.append(self.canvas);
+            self.displacement_sprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
 
 
-            self.canvas.style.position = 'absolute';
-            self.canvas.style.top = 0;
-            self.canvas.style.bottom = 0;
-            self.canvas.style.left = 0;
-            self.canvas.style.right = 0;
-            self.canvas.style.zIndex = 2;
-            self.canvas.style.cursor = 'pointer';
+            self.stage.filters = [self.displacement_filter];
 
-            self.context = self.canvas.getContext('2d');
+            self.displacement_sprite.scale.x = 2;
+            self.displacement_sprite.scale.y = 2;
 
-            self.canvas.width = self.$element.outerWidth();
-            self.canvas.height = self.$element.outerWidth();
-
-            window.onresize = self.on_resize;
+            self.stage.addChild( self.displacement_sprite );
 
 
-            self.context.rect(20,20,150,100);
-            self.context.stroke();
+            var texture = new PIXI.Texture.fromImage(self.settings.background_image);
+            var image = new PIXI.Sprite(texture);
 
-            self.loop();
+                image.anchor.set(0.5);
+                image.x = self.renderer.width / 2;
+                image.y = self.renderer.height / 2;
 
-        }
-
-        on_resize() {
-
-        }
-
-        update() {
-            let self = this;
+            self.stage.addChild(image);
 
 
-        }
+            var ticker = new PIXI.ticker.Ticker();
 
-        clear() {
-            let self = this;
+            ticker.autoStart = true;
 
-            self.context.clearRect(0, 0, innerWidth, innerHeight);
-        }
+            ticker.add(function( delta ) {
 
+                self.displacement_sprite.x += 1 * delta;
+                self.displacement_sprite.y += 1;
 
-        render() {
+                self.renderer.render( self.stage );
 
-            let self = this;
-
-            let canvas_center_x = self.canvas.width / 2;
-            let canvas_center_y = self.canvas.height / 2;
-
-        }
-
-        loop() {
-
-            let self = this;
-
-            self.clear();
-            self.update();
-            self.render();
-
-            window.requestAnimFrame(function(){
-                self.loop();
             });
-
         }
     }
 
 
-    $.fn.liquidDistortion = function() {
+    $.fn.liquidDistortion = function () {
         let $this = this,
             opt = arguments[0],
             args = Array.prototype.slice.call(arguments, 1),
@@ -134,8 +87,8 @@
         for (i = 0; i < length; i++) {
             if (typeof opt == 'object' || typeof opt == 'undefined')
                 $this[i].liquid_distortion = new LiquidDistortion($this[i], opt);
-        else
-            ret = $this[i].liquid_distortion[opt].apply($this[i].liquid_distortion, args);
+            else
+                ret = $this[i].liquid_distortion[opt].apply($this[i].liquid_distortion, args);
             if (typeof ret != 'undefined') return ret;
         }
         return $this;
