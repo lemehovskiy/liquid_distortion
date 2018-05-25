@@ -1,0 +1,16 @@
+{
+    "name": "liquid_distortion",
+    "description": "Liquid distortion plugin",
+    "main": "build\/liquid_distortion.js",
+    "keywords": [
+        "canvas",
+        "plugin",
+        "liquid",
+        "distortion",
+        "animation",
+        "pixijs"
+    ],
+    "repository": {
+        "url": "https:\/\/github.com\/lemehovskiy\/liquid_distortion"
+    }
+}
