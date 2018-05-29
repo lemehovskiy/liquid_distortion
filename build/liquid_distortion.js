@@ -114,6 +114,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             self.displacement_sprite = new PIXI.Sprite.fromImage(self.settings.displacement_sprite);
             self.displacement_filter = new PIXI.filters.DisplacementFilter(self.displacement_sprite);
 
+            self.ticker_increment = { x: 0, y: 0 };
+
             self.init();
         }
 
@@ -123,14 +125,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 var self = this;
 
-                document.body.appendChild(self.renderer.view);
+                self.$element[0].append(self.renderer.view);
+
+                self.$canvas = self.$element.find('canvas');
 
                 self.displacement_sprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
 
                 self.stage.filters = [self.displacement_filter];
 
-                self.displacement_sprite.scale.x = 2;
-                self.displacement_sprite.scale.y = 2;
+                self.displacement_sprite.scale.x = 3;
+                self.displacement_sprite.scale.y = 3;
 
                 self.stage.addChild(self.displacement_sprite);
 
@@ -143,17 +147,176 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 self.stage.addChild(image);
 
-                var ticker = new PIXI.ticker.Ticker();
+                self.ticker = new PIXI.ticker.Ticker();
 
-                ticker.autoStart = true;
+                self.ticker.autoStart = true;
 
-                ticker.add(function (delta) {
+                self.ticker.add(function (delta) {
 
-                    self.displacement_sprite.x += 1 * delta;
-                    self.displacement_sprite.y += 1;
+                    self.displacement_sprite.x += self.ticker_increment.x;
+                    self.displacement_sprite.y += self.ticker_increment.y;
+                    // self.displacement_sprite.rotation -= 0.001;
 
                     self.renderer.render(self.stage);
                 });
+
+                self.update_orientation();
+
+                $(window).on('resize', function () {
+                    self.update_orientation();
+                });
+
+                self.subscribe_mouse_move_event();
+                self.subscribe_gyro_event();
+            }
+        }, {
+            key: 'subscribe_mouse_move_event',
+            value: function subscribe_mouse_move_event() {
+
+                var self = this;
+
+                self.$canvas.on("mousemove", function (e) {
+                    var cursor_shift = self.get_cursor_shift_by_element(self.$canvas, e.pageX, e.pageY, true);
+
+                    self.ticker_increment.x = cursor_shift.x * 2;
+                    self.ticker_increment.y = cursor_shift.y * 2;
+                });
+
+                self.$canvas.mouseleave(function () {
+                    animate_on_mouseleave();
+                });
+
+                function animate_on_mouseleave() {
+                    TweenLite.to(self.ticker_increment, 1, { x: 0, y: 0 });
+                }
+            }
+        }, {
+            key: 'subscribe_gyro_event',
+            value: function subscribe_gyro_event() {
+
+                var self = this;
+
+                var lastGamma = 0,
+                    lastBeta = 0,
+                    rangeGamma = 0,
+                    rangeBeta = 0;
+
+                window.addEventListener("deviceorientation", function (e) {
+
+                    var roundedGamma = Math.round(e.gamma),
+                        roundedBeta = Math.round(e.beta),
+                        x = 0,
+                        y = 0;
+
+                    if (roundedGamma > lastGamma && rangeGamma < 15) {
+                        rangeGamma++;
+                    } else if (roundedGamma < lastGamma && rangeGamma > -15) {
+                        rangeGamma--;
+                    }
+
+                    if (roundedBeta > lastBeta && rangeBeta < 15) {
+                        rangeBeta++;
+                    } else if (roundedBeta < lastBeta && rangeBeta > -15) {
+                        rangeBeta--;
+                    }
+
+                    lastGamma = roundedGamma;
+                    lastBeta = roundedBeta;
+
+                    var gamaInPercent = 100 / 15 * rangeGamma,
+                        betaInPercent = 100 / 15 * rangeBeta;
+
+                    if (self.device_orientation == 'landscape') {
+                        x = betaInPercent;
+                        y = gamaInPercent;
+                    } else {
+                        x = gamaInPercent;
+                        y = betaInPercent * -1;
+                    }
+
+                    return { x: x, y: y };
+                }, true);
+            }
+        }, {
+            key: 'get_gyro_progress',
+            value: function get_gyro_progress() {
+                var self = this;
+
+                var lastGamma = 0,
+                    lastBeta = 0,
+                    rangeGamma = 0,
+                    rangeBeta = 0;
+
+                window.addEventListener("deviceorientation", function (e) {
+
+                    var roundedGamma = Math.round(e.gamma),
+                        roundedBeta = Math.round(e.beta),
+                        x = 0,
+                        y = 0;
+
+                    if (roundedGamma > lastGamma && rangeGamma < 15) {
+                        rangeGamma++;
+                    } else if (roundedGamma < lastGamma && rangeGamma > -15) {
+                        rangeGamma--;
+                    }
+
+                    if (roundedBeta > lastBeta && rangeBeta < 15) {
+                        rangeBeta++;
+                    } else if (roundedBeta < lastBeta && rangeBeta > -15) {
+                        rangeBeta--;
+                    }
+
+                    lastGamma = roundedGamma;
+                    lastBeta = roundedBeta;
+
+                    var gamaInPercent = 100 / 15 * rangeGamma,
+                        betaInPercent = 100 / 15 * rangeBeta;
+
+                    //TODO Organize orientation statement
+
+                    if (self.device_orientation == 'landscape') {
+                        x = self.shift / self.coef / 100 * betaInPercent;
+                        y = self.shift / self.coef / 100 * gamaInPercent;
+                    } else {
+                        x = self.shift / self.coef / 100 * gamaInPercent;
+                        y = self.shift / self.coef / 100 * betaInPercent * -1;
+                    }
+
+                    if (self.settings.animation_type == 'shift') {
+                        TweenLite.to(self.$element_inner, self.settings.animate_duration, { x: y + '%', y: x + '%' });
+                    } else if (self.settings.animation_type == 'rotate') {
+                        TweenLite.to(self.$element_inner, self.settings.animate_duration, {
+                            rotationX: -y + '%',
+                            rotationY: -x + '%'
+                        });
+                    }
+                }, true);
+            }
+        }, {
+            key: 'get_cursor_shift_by_element',
+            value: function get_cursor_shift_by_element($element, cursor_x, cursor_y) {
+                var self = this;
+
+                var offset = $element.offset(),
+                    section_width = $element.outerWidth(),
+                    section_height = $element.outerHeight(),
+                    pageX = cursor_x - offset.left - $element.width() * 0.5,
+                    pageY = cursor_y - offset.top - $element.height() * 0.5,
+                    cursor_percent_position_x = pageX / section_width * 2,
+                    cursor_percent_position_y = pageY / section_height * 2;
+
+                return { x: cursor_percent_position_x, y: cursor_percent_position_y };
+            }
+        }, {
+            key: 'update_orientation',
+            value: function update_orientation() {
+                var self = this;
+
+                if (self.ww > self.wh) {
+                    self.device_orientation = 'landscape';
+                } else {
+                    self.device_orientation = 'portrait';
+                }
             }
         }]);
 
