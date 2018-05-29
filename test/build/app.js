@@ -12246,100 +12246,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 var self = this;
 
-                var lastGamma = 0,
-                    lastBeta = 0,
-                    rangeGamma = 0,
-                    rangeBeta = 0;
+                var last_gamma = 0,
+                    last_beta = 0,
+                    range_gamma = 0,
+                    range_beta = 0;
+
+                var range = 15;
 
                 window.addEventListener("deviceorientation", function (e) {
 
-                    var roundedGamma = Math.round(e.gamma),
-                        roundedBeta = Math.round(e.beta),
+                    var rounded_gamma = Math.round(e.gamma),
+                        rounded_beta = Math.round(e.beta),
                         x = 0,
                         y = 0;
 
-                    if (roundedGamma > lastGamma && rangeGamma < 15) {
-                        rangeGamma++;
-                    } else if (roundedGamma < lastGamma && rangeGamma > -15) {
-                        rangeGamma--;
+                    if (rounded_gamma > last_gamma && range_gamma < range) {
+                        range_gamma++;
+                    } else if (rounded_gamma < last_gamma && range_gamma > -range) {
+                        range_gamma--;
                     }
 
-                    if (roundedBeta > lastBeta && rangeBeta < 15) {
-                        rangeBeta++;
-                    } else if (roundedBeta < lastBeta && rangeBeta > -15) {
-                        rangeBeta--;
+                    if (rounded_beta > last_beta && range_beta < range) {
+                        range_beta++;
+                    } else if (rounded_beta < last_beta && range_beta > -range) {
+                        range_beta--;
                     }
 
-                    lastGamma = roundedGamma;
-                    lastBeta = roundedBeta;
-
-                    var gamaInPercent = 100 / 15 * rangeGamma,
-                        betaInPercent = 100 / 15 * rangeBeta;
+                    last_gamma = rounded_gamma;
+                    last_beta = rounded_beta;
 
                     if (self.device_orientation == 'landscape') {
-                        x = betaInPercent;
-                        y = gamaInPercent;
+                        x = range_gamma / range;
+                        y = range_beta / range;
                     } else {
-                        x = gamaInPercent;
-                        y = betaInPercent * -1;
+                        x = range_beta / range;
+                        y = -(range_gamma / range);
                     }
+
+                    $('#gamma').text(x);
+                    $('#beta').text(y);
 
                     return { x: x, y: y };
-                }, true);
-            }
-        }, {
-            key: 'get_gyro_progress',
-            value: function get_gyro_progress() {
-                var self = this;
-
-                var lastGamma = 0,
-                    lastBeta = 0,
-                    rangeGamma = 0,
-                    rangeBeta = 0;
-
-                window.addEventListener("deviceorientation", function (e) {
-
-                    var roundedGamma = Math.round(e.gamma),
-                        roundedBeta = Math.round(e.beta),
-                        x = 0,
-                        y = 0;
-
-                    if (roundedGamma > lastGamma && rangeGamma < 15) {
-                        rangeGamma++;
-                    } else if (roundedGamma < lastGamma && rangeGamma > -15) {
-                        rangeGamma--;
-                    }
-
-                    if (roundedBeta > lastBeta && rangeBeta < 15) {
-                        rangeBeta++;
-                    } else if (roundedBeta < lastBeta && rangeBeta > -15) {
-                        rangeBeta--;
-                    }
-
-                    lastGamma = roundedGamma;
-                    lastBeta = roundedBeta;
-
-                    var gamaInPercent = 100 / 15 * rangeGamma,
-                        betaInPercent = 100 / 15 * rangeBeta;
-
-                    //TODO Organize orientation statement
-
-                    if (self.device_orientation == 'landscape') {
-                        x = self.shift / self.coef / 100 * betaInPercent;
-                        y = self.shift / self.coef / 100 * gamaInPercent;
-                    } else {
-                        x = self.shift / self.coef / 100 * gamaInPercent;
-                        y = self.shift / self.coef / 100 * betaInPercent * -1;
-                    }
-
-                    if (self.settings.animation_type == 'shift') {
-                        TweenLite.to(self.$element_inner, self.settings.animate_duration, { x: y + '%', y: x + '%' });
-                    } else if (self.settings.animation_type == 'rotate') {
-                        TweenLite.to(self.$element_inner, self.settings.animate_duration, {
-                            rotationX: -y + '%',
-                            rotationY: -x + '%'
-                        });
-                    }
                 }, true);
             }
         }, {
