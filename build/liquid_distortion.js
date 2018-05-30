@@ -101,7 +101,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var self = this;
 
             //extend by function call
-            self.settings = $.extend(true, {}, options);
+            self.settings = $.extend(true, {
+                debug: false
+            }, options);
 
             self.$element = $(element);
 
@@ -124,6 +126,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function init() {
 
                 var self = this;
+
+                if (self.settings.debug) {
+                    self.$element.append('<div style="position: absolute;"><div class="gamma"></div><div class="beta"></div></div>');
+                }
 
                 self.$element[0].append(self.renderer.view);
 
@@ -160,6 +166,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     self.renderer.render(self.stage);
                 });
 
+                self.device_orientation = 'portrait';
+
                 self.update_orientation();
 
                 $(window).on('resize', function () {
@@ -193,7 +201,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'subscribe_gyro_event',
             value: function subscribe_gyro_event() {
-
                 var self = this;
 
                 var last_gamma = 0,
@@ -233,10 +240,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         y = -(range_gamma / range);
                     }
 
-                    $('#gamma').text(x);
-                    $('#beta').text(y);
+                    if (self.settings.debug) {
+                        $element.find('.debug .gamma').text(x);
+                        $element.find('.debug .beta').text(y);
+                    }
 
-                    return { x: x, y: y };
+                    self.ticker_increment.x = x * 3;
+                    self.ticker_increment.y = y * 3;
                 }, true);
             }
         }, {

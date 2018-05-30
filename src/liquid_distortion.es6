@@ -16,7 +16,9 @@
             let self = this;
 
             //extend by function call
-            self.settings = $.extend(true, {}, options);
+            self.settings = $.extend(true, {
+                debug: false
+            }, options);
 
             self.$element = $(element);
 
@@ -39,6 +41,10 @@
         init() {
 
             let self = this;
+
+            if (self.settings.debug) {
+                self.$element.append('<div style="position: absolute;"><div class="gamma"></div><div class="beta"></div></div>')
+            }
 
             self.$element[0].append(self.renderer.view);
 
@@ -80,6 +86,8 @@
             });
 
 
+            self.device_orientation = 'portrait';
+
             self.update_orientation();
 
             $(window).on('resize', function () {
@@ -116,8 +124,7 @@
         }
 
 
-        subscribe_gyro_event() {
-
+        subscribe_gyro_event(){
             let self = this;
 
             let last_gamma = 0,
@@ -163,10 +170,15 @@
                 }
 
 
-                $('#gamma').text(x);
-                $('#beta').text(y);
+                if (self.settings.debug) {
+                    $element.find('.debug .gamma').text(x);
+                    $element.find('.debug .beta').text(y);
+                }
 
-                return {x: x, y: y}
+                self.ticker_increment.x = x * 3;
+                self.ticker_increment.y = y * 3;
+
+
 
             }, true);
         }
