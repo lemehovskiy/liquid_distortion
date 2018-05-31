@@ -6,8 +6,6 @@ import * as PIXI from 'pixi.js'
 
 require('../build/liquid_distortion.js');
 
-import {TweenLite} from "gsap";
-
 
 $(document).ready(function () {
 

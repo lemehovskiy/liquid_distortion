@@ -167,14 +167,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     self.background_image.width = element_height / self.background_image_height_original * self.background_image_width_original + 50;
                     self.background_image.height = element_height + 50;
                 }
-
-                // self.background_image.width = 1;
-                // self.background_image.height = null;
-
-                // self.background_image.heigth = $element.outerHeight();
-
-                // self.background_image.setTransform(0, 0, 2, 2)
-                // self.background_image.setTransform(0, 0, 1, 2)
             }
         }, {
             key: 'init',
@@ -187,7 +179,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     self.$element.append('<div class="debug" style="position: absolute;"><div class="gamma"></div><div class="beta"></div></div>');
                 }
 
-                self.$element[0].append(self.renderer.view);
+                self.$element.append(self.renderer.view);
 
                 self.$canvas = self.$element.find('canvas');
                 self.displacement_sprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
@@ -195,9 +187,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 self.displacement_sprite.scale.x = 3;
                 self.displacement_sprite.scale.y = 3;
                 self.stage.addChild(self.displacement_sprite);
-
-                // self.background_texture = new PIXI.Texture.fromImage(self.settings.background_image);
-                // self.background_image = new PIXI.Sprite(self.background_texture);
 
                 self.background_image = new PIXI.Sprite.fromImage(self.settings.background_image);
                 self.background_image.texture.baseTexture.on('loaded', function () {
@@ -284,8 +273,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, {
             key: 'get_cursor_shift_by_element',
             value: function get_cursor_shift_by_element($element, cursor_x, cursor_y) {
-                var self = this;
-
                 var offset = $element.offset(),
                     section_width = $element.outerWidth(),
                     section_height = $element.outerHeight(),

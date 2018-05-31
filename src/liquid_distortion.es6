@@ -35,7 +35,7 @@
             self.background_image_width_original = 0;
             self.background_image_height_original = 0;
 
-            self.ticker_increment = {x: 0, y: 0}
+            self.ticker_increment = {x: 0, y: 0};
 
             self.init();
         }
@@ -65,7 +65,7 @@
             let element_width = self.$element.outerWidth(),
                 element_height = self.$element.outerHeight();
 
-            self.renderer.resize(element_width, element_height)
+            self.renderer.resize(element_width, element_height);
 
             self.background_image.anchor.set(0.5);
 
@@ -81,14 +81,6 @@
                 self.background_image.height = element_height + 50;
             }
 
-            // self.background_image.width = 1;
-            // self.background_image.height = null;
-
-            // self.background_image.heigth = $element.outerHeight();
-
-            // self.background_image.setTransform(0, 0, 2, 2)
-            // self.background_image.setTransform(0, 0, 1, 2)
-
         }
 
         init() {
@@ -100,7 +92,7 @@
                 self.$element.append('<div class="debug" style="position: absolute;"><div class="gamma"></div><div class="beta"></div></div>')
             }
 
-            self.$element[0].append(self.renderer.view);
+            self.$element.append(self.renderer.view);
 
             self.$canvas = self.$element.find('canvas');
             self.displacement_sprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
@@ -108,10 +100,7 @@
             self.displacement_sprite.scale.x = 3;
             self.displacement_sprite.scale.y = 3;
             self.stage.addChild(self.displacement_sprite);
-
-            // self.background_texture = new PIXI.Texture.fromImage(self.settings.background_image);
-            // self.background_image = new PIXI.Sprite(self.background_texture);
-
+            
             self.background_image = new PIXI.Sprite.fromImage(self.settings.background_image);
             self.background_image.texture.baseTexture.on('loaded', function () {
 
@@ -196,8 +185,6 @@
         }
 
         get_cursor_shift_by_element($element, cursor_x, cursor_y) {
-            let self = this;
-
             let offset = $element.offset(),
 
                 section_width = $element.outerWidth(),
