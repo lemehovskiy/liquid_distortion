@@ -182,13 +182,8 @@ section {
   bottom: 0;
 }
 
-.demo-wrap {
-  max-width: 500px;
-  margin: auto;
-}
-
-.demo-wrap .rect-outer {
-  padding: 100% 0 0;
+.liquid-distortion-demo {
+  height: 600px;
 }
 
 
