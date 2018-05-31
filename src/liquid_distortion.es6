@@ -17,7 +17,7 @@
 
             //extend by function call
             self.settings = $.extend(true, {
-                debug: false
+                debug: true
             }, options);
 
             self.$element = $(element);
@@ -43,7 +43,7 @@
             let self = this;
 
             if (self.settings.debug) {
-                self.$element.append('<div style="position: absolute;"><div class="gamma"></div><div class="beta"></div></div>')
+                self.$element.append('<div class="debug" style="position: absolute;"><div class="gamma"></div><div class="beta"></div></div>')
             }
 
             self.$element[0].append(self.renderer.view);
@@ -128,57 +128,34 @@
             let self = this;
 
             let last_gamma = 0,
-                last_beta = 0,
-                range_gamma = 0,
-                range_beta = 0;
+                last_beta = 0;
 
-            let range = 15;
+            let current_timestamp = null;
+            let last_timestamp = Date.now();
 
             window.addEventListener("deviceorientation", function (e) {
 
-                let rounded_gamma = Math.round(e.gamma),
-                    rounded_beta = Math.round(e.beta),
-                    x = 0,
-                    y = 0;
+                current_timestamp = Date.now();
 
-                if (rounded_gamma > last_gamma && range_gamma < range) {
-                    range_gamma++;
-                }
-                else if (rounded_gamma < last_gamma && range_gamma > -range) {
-                    range_gamma--;
-                }
+                let distance_time =  current_timestamp - last_timestamp;
 
-                if (rounded_beta > last_beta && range_beta < range) {
-                    range_beta++;
-                }
-                else if (rounded_beta < last_beta && range_beta > -range) {
-                    range_beta--;
-                }
+                let distance_gamma = e.gamma - last_gamma;
+                let distance_beta = e.beta - last_beta;
 
-                last_gamma = rounded_gamma;
-                last_beta = rounded_beta;
+                let speed_gamma = Math.round(distance_gamma / distance_time * 100);
+                let speed_beta = Math.round(distance_beta / distance_time * 100);
 
 
-                if (self.device_orientation == 'landscape') {
-                    x = range_gamma / range;
-                    y = range_beta / range;
-                }
-
-                else {
-                    x = range_beta / range;
-                    y = -(range_gamma / range)
-                }
+                self.$element.find('.debug .gamma').text(speed_gamma);
+                self.$element.find('.debug .beta').text(speed_beta);
 
 
-                if (self.settings.debug) {
-                    $element.find('.debug .gamma').text(x);
-                    $element.find('.debug .beta').text(y);
-                }
+                self.ticker_increment.x = speed_gamma;
+                self.ticker_increment.y = speed_beta;
 
-                self.ticker_increment.x = x * 3;
-                self.ticker_increment.y = y * 3;
-
-
+                last_gamma = e.gamma;
+                last_beta = e.beta;
+                last_timestamp = current_timestamp;
 
             }, true);
         }
