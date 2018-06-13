@@ -10,8 +10,8 @@ require('../build/liquid_distortion.js');
 $(document).ready(function () {
 
     $('.liquid-distortion-demo').liquidDistortion({
-        background_image: "imgs/sample-img-1.jpg",
-        displacement_sprite: "imgs/displacement_sprite.jpg"
+        background_image: "imgs/grd.png",
+        displacement_sprite: "imgs/displacement-sprite-3.jpg"
     });
 
 });

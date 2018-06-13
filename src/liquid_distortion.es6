@@ -140,8 +140,11 @@
             self.$canvas.on("mousemove", function (e) {
                 let cursor_shift = self.get_cursor_shift_by_element(self.$canvas, e.pageX, e.pageY, true);
 
-                self.ticker_increment.x = cursor_shift.x * 2;
-                self.ticker_increment.y = cursor_shift.y * 2;
+                TweenLite.to(self.displacement_sprite.scale, 3, {x: 2, y: 2})
+
+                self.ticker_increment.x = cursor_shift.x * 5;
+                self.ticker_increment.y = cursor_shift.y * 5;
+
             });
 
             self.$canvas.mouseleave(function () {
@@ -149,7 +152,9 @@
             });
 
             function animate_on_mouseleave() {
-                TweenLite.to(self.ticker_increment, 1, {x: 0, y: 0})
+                TweenLite.to(self.displacement_sprite.scale, 3, {x:20, y: 20})
+
+                TweenLite.to(self.ticker_increment, 3, {x: 0, y: 0})
             }
         }
 

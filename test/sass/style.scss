@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,600');
 
+@import "mixins.scss";
 @import "_reset.scss";
 
 body {
@@ -17,7 +18,7 @@ body {
 
 .container {
   margin: auto;
-
+  z-index: 10;
 }
 
 section {
@@ -36,6 +37,13 @@ section {
   }
 }
 
-.liquid-distortion-demo {
-  height: 80vh;
+.liquid-distortion-demo-background {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
 }
+
+@import "partials/section-intro";
+@import "partials/_section-features-list.scss";
