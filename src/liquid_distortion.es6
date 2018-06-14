@@ -18,11 +18,11 @@
             //extend by function call
             self.settings = $.extend(true, {
                 debug: false,
-                default_displacement_sprite_scale: 4,
+                default_displacement_sprite_scale: 3,
                 mouse_over_displacement_sprite_scale: 1,
-                ticker_increment: 10,
+                ticker_increment: 3,
                 mouse_move_animate_duration: 2,
-                mouse_leave_animate_duration: 2
+                mouse_leave_animate_duration: 3
 
 
             }, options);
