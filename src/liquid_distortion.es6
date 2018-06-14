@@ -1,5 +1,5 @@
 /*
- Version: 1.0.0
+ Version: 0.1.0
  Author: lemehovskiy
  Website: http://lemehovskiy.github.io
  Repo: https://github.com/lemehovskiy/liquid_distortion
@@ -17,7 +17,14 @@
 
             //extend by function call
             self.settings = $.extend(true, {
-                debug: false
+                debug: false,
+                default_displacement_sprite_scale: 4,
+                mouse_over_displacement_sprite_scale: 1,
+                ticker_increment: 10,
+                mouse_move_animate_duration: 2,
+                mouse_leave_animate_duration: 2
+
+
             }, options);
 
             self.$element = $(element);
@@ -97,10 +104,10 @@
             self.$canvas = self.$element.find('canvas');
             self.displacement_sprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
             self.stage.filters = [self.displacement_filter];
-            self.displacement_sprite.scale.x = 3;
-            self.displacement_sprite.scale.y = 3;
+            self.displacement_sprite.scale.x = self.settings.default_displacement_sprite_scale;
+            self.displacement_sprite.scale.y = self.settings.default_displacement_sprite_scale;
             self.stage.addChild(self.displacement_sprite);
-            
+
             self.background_image = new PIXI.Sprite.fromImage(self.settings.background_image);
             self.background_image.texture.baseTexture.on('loaded', function () {
 
@@ -140,10 +147,15 @@
             self.$canvas.on("mousemove", function (e) {
                 let cursor_shift = self.get_cursor_shift_by_element(self.$canvas, e.pageX, e.pageY, true);
 
-                TweenLite.to(self.displacement_sprite.scale, 3, {x: 2, y: 2})
+                TweenLite.to(self.displacement_sprite.scale, self.settings.mouse_move_animate_duration, {
+                    x: self.settings.mouse_over_displacement_sprite_scale,
+                    y: self.settings.mouse_over_displacement_sprite_scale
+                })
 
-                self.ticker_increment.x = cursor_shift.x * 5;
-                self.ticker_increment.y = cursor_shift.y * 5;
+                TweenLite.set(self.ticker_increment, {
+                    x: cursor_shift.x * self.settings.ticker_increment,
+                    y: cursor_shift.y * self.settings.ticker_increment
+                })
 
             });
 
@@ -152,9 +164,12 @@
             });
 
             function animate_on_mouseleave() {
-                TweenLite.to(self.displacement_sprite.scale, 3, {x:20, y: 20})
+                TweenLite.to(self.displacement_sprite.scale, self.settings.mouse_leave_animate_duration, {
+                    x: self.settings.default_displacement_sprite_scale,
+                    y: self.settings.default_displacement_sprite_scale
+                })
 
-                TweenLite.to(self.ticker_increment, 3, {x: 0, y: 0})
+                TweenLite.to(self.ticker_increment, self.settings.mouse_leave_animate_duration, {x: 0, y: 0})
             }
         }
 
