@@ -35,6 +35,9 @@
 
             self.renderer = new PIXI.autoDetectRenderer(self.$element.outerWidth(), self.$element.outerHeight(), {transparent: true});
 
+            self.renderer.plugins.interaction.autoPreventDefault = false;
+            self.renderer.view.style.touchAction = 'auto';
+
             self.stage = new PIXI.Container();
             self.displacement_sprite = new PIXI.Sprite.fromImage(self.settings.displacement_sprite);
             self.displacement_filter = new PIXI.filters.DisplacementFilter(self.displacement_sprite);
@@ -52,22 +55,17 @@
             let self = this;
 
             $(window).resize(function () {
+                self.resize();
+                
                 if (this.resizeTO) clearTimeout(this.resizeTO);
                 this.resizeTO = setTimeout(function () {
-                    $(this).trigger('resize_end');
+                    self.resize();
                 }, 500);
             });
-
-            $(window).on('resize_end', function () {
-
-                self.resize();
-            })
         }
 
         resize() {
             let self = this;
-
-            console.log(self.background_image.width);
 
             let element_width = self.$element.outerWidth(),
                 element_height = self.$element.outerHeight();
@@ -130,11 +128,11 @@
 
             self.device_orientation = 'portrait';
 
-            self.update_orientation();
+            // self.update_orientation();
 
-            $(window).on('resize', function () {
-                self.update_orientation();
-            });
+            // $(window).on('resize', function () {
+            //     self.update_orientation();
+            // });
 
             self.subscribe_mouse_move_event();
             self.subscribe_gyro_event();
